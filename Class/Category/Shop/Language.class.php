@@ -1,5 +1,5 @@
 <?php
-namespace shop\category;
+namespace category\shop;
 
 require_once __DIR__.'/../Database.php';
 

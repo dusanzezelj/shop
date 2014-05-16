@@ -1,5 +1,5 @@
 <?php
-namespace shop\category;
+namespace categoty\shop;
 require_once __DIR__.'/../Database.php';
 require_once 'Language.class.php';
 
@@ -16,39 +16,39 @@ class Category
     {
         $this->db=$db;
     }
-    public function isValidLanguage($id)
+    protected function isValidLanguage($id)
     {
         $lang= new Language($this->db);
         if (!$lang->isValid($id)){
             throw new \Exception("Please provide a valid IDLanguage", 1001);
         }
     }
-    public function isValidIdParent($id)
+    protected function isValidIdParent($id)
     {
         $query = "select ID from category where IDParent = '$id'";
         if ($this->db->getNumRows($query) == 0){
             throw new \Exception("Please provide a valid IDParent or 0", 1002);
         }
     }
-    public function isSortFlagValid($sort)
+    protected function isSortFlagValid($sort)
     {
         if ($sort != 'DEFAULT' && $sort != 'PRODUCTS' && $sort != 'ALPHABETIC'){
             throw new \Exception("Please provide a valid Sort flag ('DEFAULT', 'PRODUCTS' or 'ALPHABETIC')", 1003);
         }
     }
-    public function isActiveFlagValid($flag) 
+    protected function isActiveFlagValid($flag) 
     {
         if ($flag != 0 && $flag != 1 && $flag != 2){
             throw new \Exception("Please provide a valid Active flag (0, 1 or 2)", 1004);
         }
     }
-    public function isChildrenFlagValid($flag) 
+    private function isChildrenFlagValid($flag) 
     {
         if ($flag != 0 && $flag != 1){
             throw new \Exception("Please provide a valid Active flag (0 or 1)", 1005);
         }
     }
-    public function isValidId($id)
+    protected function isValidId($id)
     {
         $query="select * from categorydetail where ID = '$id'";
         if ($this->db->getNumRows($query) == 0) {
@@ -56,7 +56,7 @@ class Category
         }
     }
 
-    public function getCategoriesWithChildren($id_language=0, $id_parent=0, $sort='DEFAULT', $active=1)
+    private function getCategoriesWithChildren($id_language=0, $id_parent=0, $sort='DEFAULT', $active=1)
     {
         $tree= array();
         $query="select c.ID, c.IDParent, cd.Name from category as c, categorydetail as cd";
@@ -69,7 +69,7 @@ class Category
          }
             return $tree;
     }
-    public function getCategoriesNoChildren($id_language=0, $id_parent=0, $sort='DEFAULT', $active=1)
+    private function getCategoriesNoChildren($id_language=0, $id_parent=0, $sort='DEFAULT', $active=1)
     {
         $query="select c.ID, c.IDParent, cd.Name from category as c, categorydetail as cd";
         $query.=" where c.ID = cd.IDCategory and c.IDParent= '$id_parent' and cd.IDLanguage = '$id_language'";

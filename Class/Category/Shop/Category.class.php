@@ -51,7 +51,7 @@ class Category
     protected function isValidId($id)
     {
         $query="select * from categorydetail where ID = '$id'";
-        if ($this->db->getNumRows($query) == 0) {
+        if ($this->db->getNumRows($query) < 1) {
             throw new \Exception("Please provide a valid ID of category", 1006);
         }
     }

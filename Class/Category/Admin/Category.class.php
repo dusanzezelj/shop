@@ -110,6 +110,60 @@ class Category extends \categoty\shop\Category
             throw new \Exception("Category with same name, at the same level, already exist", 1013); 
         }
   }
+  public function ChangeSortOrder($id=0, $sort_order=0)
+  {
+      $this->isValidId($id);
+      $this->isValidSortOrder($sort_order);
+      $query = "SELECT ID FROM category
+          WHERE ID = $id AND SortOrder = $sort_order";
+      if ($this->db->getNumRows($query) > 0){
+            throw new \Exception("Nothing is changed", 1014); 
+        } else {
+          $update_query = "UPDATE category 
+                           SET SortOrder = $sort_order
+                           WHERE ID = $id";
+          if($result = $this->db->query($update_query)){
+              return true;
+          } else {
+              return false;  
+          }
+        }
+  }
+  private function activeCheck($id, $active)
+  {
+       $query= "SELECT ID FROM category
+               WHERE ID = $id AND IsActive = $active";
+       if ($this->db->getNumRows($query) > 0){
+            throw new \Exception("Nothing is changed", 1014); 
+       }
+  }
+
+  public function activate($id=0)
+  {
+      $this->isValidId($id);
+      $this->activeCheck($id, 1);     
+      $update_query = "UPDATE category 
+                       SET IsActive = 1
+                       WHERE ID = $id";
+          if($result = $this->db->query($update_query)){
+              return true;
+          } else {
+              return false;  
+          }           
+  }
+  public function deActivate($id=0)
+  {
+      $this->isValidId($id);
+      $this->activeCheck($id, 0);
+      $update_query = "UPDATE category 
+                       SET IsActive = 0
+                       WHERE ID = $id";
+          if($result = $this->db->query($update_query)){
+              return true;
+          } else {
+              return false;  
+          }          
+  }
 }
 
 ?>

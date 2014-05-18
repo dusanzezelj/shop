@@ -164,6 +164,44 @@ class Category extends \categoty\shop\Category
               return false;  
           }          
   }
+  private function isCategoryHaveProduct($id)
+  {
+      $query = "SELECT ID FROM productcategory
+                WHERE IDCategory = $id";
+      return $this->db->getNumRows($query) > 0 ? true : false;       
+      
+  }
+
+  public function delete($id=0, $unlink_products=false)
+  {
+      $this->isValidId($id);
+      $cat_have_products = $this->isCategoryHaveProduct($id);
+      if($unlink_products == false && $cat_have_products == true){
+          throw new Exception("Category can't be deleted because it contain products. Try with UnlinkProducts=True", 1015);
+  }
+      if($cat_have_products){
+          $unlink_query = "UPDATE productcategory
+                           SET IDCategory = 0
+                           WHERE IDCategory = $id";
+          $this->db->query($unlink_query);
+          $affected_rows = $this->db->getAffectedRows();
+          $delete_query = "UPDATE category
+                           SET IsActive = -1
+                           WHERE ID = $id";
+          $this->db->query($delete_query);
+          return $affected_rows;
+      } elseif (!$cat_have_products) {
+          $delete_query = "UPDATE category
+                           SET IsActive = -1
+                           WHERE ID = $id";
+          if($this->db->query($delete_query)){
+              return true;
+          } else {
+              return false;
+          }
+      }
+      
+  }
 }
 
 ?>
